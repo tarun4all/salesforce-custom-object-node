@@ -1,0 +1,16 @@
+{
+  "name": "salesforce-custom-object-node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "archiver": "^4.0.1",
+    "express": "^4.17.1",
+    "jsforce": "^1.9.3"
+  }
+}

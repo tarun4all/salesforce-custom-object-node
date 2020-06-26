@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simplata</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <style>
+        .box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="#">Simplata</a>
+    </nav>
+    <div class="box">
+        <div style="width: 50%;">
+            <div class="card" style="margin-top: 5%;">
+                <div class="card-body">
+                    <h4>Object Info</h4>
+                    <hr />
+
+                    <form id="objectfields" action="">
+                        <div class="form-group">
+                            <label for="objectData">Object Name</label>
+                            <input type="text" class="form-control" id="objectData" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="field">Field Name</label>
+                            <input type="text" class="form-control" id="field" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="text" class="form-control" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pwd">Password</label>
+                            <input type="password" class="form-control" id="pwd" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="secret">Secret Key</label>
+                            <input type="password" class="form-control" id="secret" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="reset" class="btn btn-primary">Reset</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script>
+        $(function () {
+            $('form').submit(async function(e) {
+                e.preventDefault();
+                const data = { 
+                    "object": $("#objectData").val(), 
+                    "field" : $("#field").val(),
+                    "email" : $("#email").val(),
+                    "pwd" : $("#pwd").val(),
+                    "secret" : $("#secret").val()
+                };
+
+                const response = await fetch("/api/customObj", {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                }).catch((e) => {
+                    return {json: () => {return {}}};
+                });
+                const resData = await response.json().catch(e => {return {}});
+
+                if(resData.status) {
+                    window.open(`/zip/${resData.status}.zip`);
+                    alert("Downloading started..");
+                } else {
+                    alert("Some error occures");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
