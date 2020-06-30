@@ -1,5 +1,6 @@
 const fs = require('fs');
 const archiver = require('archiver');
+const path = require('path');
 
 function GenerateController(fieldsString, ControllerClassName, objectName) {
     var controllerClassFile = "./dump/" + ControllerClassName + ".txt";
@@ -680,6 +681,18 @@ function compressZip(zipName) {
     archive.finalize();
 }
 
+function cleanDump(directory = "dump") {
+    fs.readdir(directory, (err, files) => {
+        if (err) throw err;
+      
+        for (const file of files) {
+          fs.unlink(path.join(directory, file), err => {
+            if (err) throw err;
+          });
+        }
+    });
+}
+
 module.exports = {
     GenerateController,
     GenerateTrigger,
@@ -691,4 +704,7 @@ module.exports = {
     GenerateGlobalService,
     makeid,
     compressZip,
+    cleanDump,
 }
+
+cleanDump();

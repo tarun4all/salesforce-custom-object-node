@@ -17,6 +17,7 @@ const {
     GenerateGlobalService,
     makeid,
     compressZip,
+    cleanDump,
 } = require("./utils");
 
 app.use(express.json());
@@ -40,7 +41,9 @@ app.post('/api/customObj', (req, res) => {
     const ListViewPageName = "VF_Display_" + objectName;
     const EditPageName = "VF_Edit_" + objectName;
 
-    const conn = new jsforce.Connection();
+    const conn = new jsforce.Connection({
+        version: `${req.body.version}.0`
+    });//'Srivastava@123cnICBecdyZLQ7R8g5OyPHnSr'
     conn.login(req.body.email, req.body.pwd + req.body.secret, function (err, res) {
       if (err) { console.error(err); }
         
@@ -75,6 +78,7 @@ app.post('/api/customObj', (req, res) => {
         GenererateEditPage(fieldDetail, GlobalfileName, EditControllerClassName, EditPageName);
 
         const zipName = makeid(25);
+        cleanDump();
         compressZip(zipName);
         _temp.send({status: zipName});
       });
