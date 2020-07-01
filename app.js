@@ -29,23 +29,26 @@ app.get('/', (req, res) => {
 });
 
 app.post('/api/customObj', (req, res) => {
-    console.log(req.body);
     const _response = res;
     const objectName = req.body.object;
     const fieldForEncryption = req.body.field;
-    const GlobalfileName = "GlobalService_" + objectName;
-    const ControllerClassName = "Cntr_" + objectName;
-    const EditControllerClassName = "Cntr_Edit_" + objectName;
-    const TriggerName = "Tr_" + objectName;
-    const ServiceClassName = "Service_" + objectName;
-    const ListViewPageName = "VF_Display_" + objectName;
-    const EditPageName = "VF_Edit_" + objectName;
-
+    const GlobalfileName = "GlobalService" + objectName.replace('__','');
+    const ControllerClassName = "Cntr" + objectName.replace('__','');
+    const EditControllerClassName = "CntrEdit" + objectName.replace('__','');
+    const TriggerName = "Tr" + objectName.replace('__','');
+    const ServiceClassName = "Service" + objectName.replace('__','');
+    const ListViewPageName = "VFDisplay" + objectName.replace('__','');
+    const EditPageName = "VFEdit" + objectName.replace('__','');
+    const isOtherEnvironment = true; //req.body.salesforceEnvironment;
+    const version = req.body.version;
     const conn = new jsforce.Connection({
-        version: `${req.body.version}.0`
+        version: `${version}.0`
     });//'Srivastava@123cnICBecdyZLQ7R8g5OyPHnSr'
     conn.login(req.body.email, req.body.pwd + req.body.secret, function (err, res) {
       if (err) { console.error(err); }
+      
+      //clear the folder for new files
+      cleanDump();
         
       var _temp = _response;
       conn.sobject(objectName).describe(function (err, meta) {
@@ -69,18 +72,19 @@ app.post('/api/customObj', (req, res) => {
         console.log(fieldDetail);
         console.log(GetControlFromType("boolean"));
         console.log(fieldsString);
-        GenerateService(fieldsString, fieldForEncryption, ServiceClassName, objectName);
-        GenerateGlobalService(fieldsString, fieldForEncryption, GlobalfileName, objectName);
-        GenerateTrigger(TriggerName, objectName, fieldForEncryption);
-        GenerateController(fieldsString, ControllerClassName, objectName);
-        GenerateEditController(fieldsString, fieldForEncryption, EditControllerClassName, ServiceClassName, objectName);
-        GenerateViewPage(fieldDetail, ControllerClassName, ListViewPageName);
-        GenererateEditPage(fieldDetail, GlobalfileName, EditControllerClassName, EditPageName);
+        GenerateService(fieldsString, fieldForEncryption, ServiceClassName, objectName,isOtherEnvironment,version);
+        GenerateGlobalService(fieldsString, fieldForEncryption, GlobalfileName, objectName,isOtherEnvironment,version);
+        GenerateTrigger(TriggerName, objectName, fieldForEncryption,ServiceClassName,isOtherEnvironment,version);
+        GenerateController(fieldsString, ControllerClassName, objectName,isOtherEnvironment,version,ListViewPageName);
+        GenerateEditController(fieldsString, fieldForEncryption, EditControllerClassName, ServiceClassName, objectName,isOtherEnvironment,version,ListViewPageName);
+        GenerateViewPage(fieldDetail, ControllerClassName, ListViewPageName,EditPageName,isOtherEnvironment,version);
+        GenererateEditPage(fieldDetail, GlobalfileName, EditControllerClassName, EditPageName,fieldForEncryption,ListViewPageName,isOtherEnvironment,version); 
 
         const zipName = makeid(25);
-        cleanDump();
-        compressZip(zipName);
-        _temp.send({status: zipName});
+        setTimeout(() => {
+            compressZip(zipName);
+            _temp.send({status: zipName});
+        }, 1000);
       });
     });
 });
@@ -114,28 +118,7 @@ app.get("/download", (req, res) => {
     });
     
     archive.pipe(output);
-    
-    // var file1 = __dirname + '/app.js';
-    // archive.append(file_system.createReadStream(file1), { name: 'app.js' });
-    
-    // append a file from string
-    // archive.append('string cheese!', { name: 'file2.txt' });
-    
-    // append a file from buffer
-    // var buffer3 = Buffer.from('buff it!');
-    // archive.append(buffer3, { name: 'file3.txt' });
-    
-    // append a file
-    // archive.file('file1.txt', { name: 'file4.txt' });
-    
-    // append files from a sub-directory and naming it `new-subdir` within the archive
-    // archive.directory('subdir/', 'new-subdir');
-    
-    // append files from a sub-directory, putting its contents at the root of archive
     archive.directory('dump/', false);
-    
-    // append files from a glob pattern
-    // archive.glob('subdir/*.txt');
     archive.finalize();
 });
 
