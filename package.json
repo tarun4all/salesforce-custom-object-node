@@ -11,6 +11,7 @@
   "dependencies": {
     "archiver": "^4.0.1",
     "express": "^4.17.1",
-    "jsforce": "^1.9.3"
+    "jsforce": "^1.9.3",
+    "shelljs": "^0.8.4"
   }
 }

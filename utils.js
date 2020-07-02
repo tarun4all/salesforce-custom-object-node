@@ -282,29 +282,29 @@ fs.appendFileSync(editController, "}\n");
 
 function GetControlFromType(dataType) {
     console.log(dataType);
-var result = "";
-switch (dataType.toLowerCase()) {
-    case "boolean":
-    result = "inputCheckbox";
-    break;
+    var result = "";
+    switch (dataType.toLowerCase()) {
+        case "boolean":
+        result = "inputCheckbox";
+        break;
 
-    case "picklist":
-    result = "selectList";
-    break;
+        case "picklist":
+        result = "selectList";
+        break;
 
-    case "string":
-    result = "inputField";
-    break;
+        case "string":
+        result = "inputField";
+        break;
 
-    case "id":
-    result = "Id";
-    break;
+        case "id":
+        result = "Id";
+        break;
 
-    default:
-    result = "inputField";
-}
-console.log("returning"+result);
-return result;
+        default:
+        result = "inputField";
+    }
+    console.log("returning"+result);
+    return result;
 }
 
 
@@ -318,112 +318,112 @@ function GenerateService(fieldsString, fieldForEncryption, ServiceClassName, obj
 
     let serviceFile = "./dump/" + ServiceClassName + extension;
     let createStream = fs.createWriteStream(serviceFile);
-createStream.end();
-fs.appendFileSync(serviceFile, "public class "+ServiceClassName+" {\n\n");
-fs.appendFileSync(serviceFile, "    public static boolean firstRun = true;\n");
-fs.appendFileSync(serviceFile, "	private static String serviceHost = 'https://gols1.simplata.com/api'; \n");
-fs.appendFileSync(serviceFile, "    private static final String PREFIX = 'sd@';\n");
-fs.appendFileSync(serviceFile, "    private static final String SUFFIX = '@sd';\n");
-fs.appendFileSync(serviceFile, "    private static final String SHARED_PARAMS = '&app=sfsc'\n");
-fs.appendFileSync(serviceFile, "        + '&v=0.1.0'\n");
-fs.appendFileSync(serviceFile, "        + '&app_unique_name=integration-test-1'\n");
-fs.appendFileSync(serviceFile, "        + '&api_key=1957-9164-4593-7482';\n\n");
+    createStream.end();
+    fs.appendFileSync(serviceFile, "public class "+ServiceClassName+" {\n\n");
+    fs.appendFileSync(serviceFile, "    public static boolean firstRun = true;\n");
+    fs.appendFileSync(serviceFile, "	private static String serviceHost = 'https://gols1.simplata.com/api'; \n");
+    fs.appendFileSync(serviceFile, "    private static final String PREFIX = 'sd@';\n");
+    fs.appendFileSync(serviceFile, "    private static final String SUFFIX = '@sd';\n");
+    fs.appendFileSync(serviceFile, "    private static final String SHARED_PARAMS = '&app=sfsc'\n");
+    fs.appendFileSync(serviceFile, "        + '&v=0.1.0'\n");
+    fs.appendFileSync(serviceFile, "        + '&app_unique_name=integration-test-1'\n");
+    fs.appendFileSync(serviceFile, "        + '&api_key=1957-9164-4593-7482';\n\n");
 
-fs.appendFileSync(serviceFile, "    @future(callout=true)\n");
-fs.appendFileSync(serviceFile, "    public static void encrypt(Id id,String " + fieldForEncryption.replace('__','') + ") {  \n");
-fs.appendFileSync(serviceFile, "        /* TODO: Need to sanitize for HTML encoding */\n");
-fs.appendFileSync(serviceFile, "        String postData = 'user=bruce' + SHARED_PARAMS + '&data='+" + fieldForEncryption.replace('__','') + ";\n");
-fs.appendFileSync(serviceFile, "        String url = serviceHost + '/tokenize';\n");
-fs.appendFileSync(serviceFile, "        Map<String, Object> results = callService(url, postData);\n");
-fs.appendFileSync(serviceFile, "        Map<String, Object> response =(Map<String, Object>) results.get('response');\n");
+    fs.appendFileSync(serviceFile, "    @future(callout=true)\n");
+    fs.appendFileSync(serviceFile, "    public static void encrypt(Id id,String " + fieldForEncryption.replace('__','') + ") {  \n");
+    fs.appendFileSync(serviceFile, "        /* TODO: Need to sanitize for HTML encoding */\n");
+    fs.appendFileSync(serviceFile, "        String postData = 'user=bruce' + SHARED_PARAMS + '&data='+" + fieldForEncryption.replace('__','') + ";\n");
+    fs.appendFileSync(serviceFile, "        String url = serviceHost + '/tokenize';\n");
+    fs.appendFileSync(serviceFile, "        Map<String, Object> results = callService(url, postData);\n");
+    fs.appendFileSync(serviceFile, "        Map<String, Object> response =(Map<String, Object>) results.get('response');\n");
 
-fs.appendFileSync(serviceFile, "        Boolean matched = (Boolean)response.get('matched');\n");
-fs.appendFileSync(serviceFile, "        if( matched ) {\n");
-fs.appendFileSync(serviceFile, "            String processedBody = (String)response.get('data');\n");
-fs.appendFileSync(serviceFile, "            system.debug('processbody'+processedBody);\n");
-fs.appendFileSync(serviceFile, "            " + objectName + " n = [SELECT " + fieldsString + " FROM " + objectName + " WHERE Id = :id LIMIT 1];\n");
-fs.appendFileSync(serviceFile, "            n." + fieldForEncryption + " = processedBody;\n");
-fs.appendFileSync(serviceFile, "            update n;\n");
-fs.appendFileSync(serviceFile, "        }\n");
-fs.appendFileSync(serviceFile, "    }\n\n");
+    fs.appendFileSync(serviceFile, "        Boolean matched = (Boolean)response.get('matched');\n");
+    fs.appendFileSync(serviceFile, "        if( matched ) {\n");
+    fs.appendFileSync(serviceFile, "            String processedBody = (String)response.get('data');\n");
+    fs.appendFileSync(serviceFile, "            system.debug('processbody'+processedBody);\n");
+    fs.appendFileSync(serviceFile, "            " + objectName + " n = [SELECT " + fieldsString + " FROM " + objectName + " WHERE Id = :id LIMIT 1];\n");
+    fs.appendFileSync(serviceFile, "            n." + fieldForEncryption + " = processedBody;\n");
+    fs.appendFileSync(serviceFile, "            update n;\n");
+    fs.appendFileSync(serviceFile, "        }\n");
+    fs.appendFileSync(serviceFile, "    }\n\n");
 
-fs.appendFileSync(serviceFile, "	    public static string DataEncryption(string noteBody) \n");
-fs.appendFileSync(serviceFile, "        {  \n");
-fs.appendFileSync(serviceFile, "         	String processedBody='';\n");
-fs.appendFileSync(serviceFile, "            /* TODO: Need to sanitize for HTML encoding */\n");
-fs.appendFileSync(serviceFile, "            String postData = 'user=bruce' + SHARED_PARAMS + '&data='+noteBody;\n");
-fs.appendFileSync(serviceFile, "            String url = serviceHost + '/tokenize';\n");
-fs.appendFileSync(serviceFile, "            Map<String, Object> results = callService(url, postData);\n");
-fs.appendFileSync(serviceFile, "            Map<String, Object> response =(Map<String, Object>) results.get('response');\n");
-fs.appendFileSync(serviceFile, "        	system.debug(response);\n");
-fs.appendFileSync(serviceFile, "            Boolean matched = (Boolean)response.get('matched');\n");
-fs.appendFileSync(serviceFile, "            if( matched ) {\n");
-fs.appendFileSync(serviceFile, "                processedBody = (String)response.get('data');\n");
-fs.appendFileSync(serviceFile, "            }\n");
-fs.appendFileSync(serviceFile, "            return processedBody;\n");
-fs.appendFileSync(serviceFile, "    }\n\n");
+    fs.appendFileSync(serviceFile, "	    public static string DataEncryption(string noteBody) \n");
+    fs.appendFileSync(serviceFile, "        {  \n");
+    fs.appendFileSync(serviceFile, "         	String processedBody='';\n");
+    fs.appendFileSync(serviceFile, "            /* TODO: Need to sanitize for HTML encoding */\n");
+    fs.appendFileSync(serviceFile, "            String postData = 'user=bruce' + SHARED_PARAMS + '&data='+noteBody;\n");
+    fs.appendFileSync(serviceFile, "            String url = serviceHost + '/tokenize';\n");
+    fs.appendFileSync(serviceFile, "            Map<String, Object> results = callService(url, postData);\n");
+    fs.appendFileSync(serviceFile, "            Map<String, Object> response =(Map<String, Object>) results.get('response');\n");
+    fs.appendFileSync(serviceFile, "        	system.debug(response);\n");
+    fs.appendFileSync(serviceFile, "            Boolean matched = (Boolean)response.get('matched');\n");
+    fs.appendFileSync(serviceFile, "            if( matched ) {\n");
+    fs.appendFileSync(serviceFile, "                processedBody = (String)response.get('data');\n");
+    fs.appendFileSync(serviceFile, "            }\n");
+    fs.appendFileSync(serviceFile, "            return processedBody;\n");
+    fs.appendFileSync(serviceFile, "    }\n\n");
 
-fs.appendFileSync(serviceFile, "    public static String decrypt(String user, String encryptedData) {\n");
-fs.appendFileSync(serviceFile, "        /* TODO: Need to sanitize for HTML encoding */\n");
-fs.appendFileSync(serviceFile, "        String postData = 'user=' + user + SHARED_PARAMS + '&data='+encryptedData;\n");
-fs.appendFileSync(serviceFile, "        String url = serviceHost + '/detokenize/';\n");
-fs.appendFileSync(serviceFile, "        Map<String, Object> results = callService(url, postData);\n");
-fs.appendFileSync(serviceFile, "        Map<String, Object> response =(Map<String, Object>) results.get('response');\n");
-fs.appendFileSync(serviceFile, "        String status = (String)response.get('status');\n");
-fs.appendFileSync(serviceFile, "        if( status == 'authorized') {\n");
-fs.appendFileSync(serviceFile, "        	String decryptedData = (String)response.get('data');   \n");
-fs.appendFileSync(serviceFile, "	        return decryptedData;\n");
-fs.appendFileSync(serviceFile, "        } else {\n");
-fs.appendFileSync(serviceFile, "            return 'Not authorized for decryption of this sensitive data.';\n");
-fs.appendFileSync(serviceFile, "        }\n");
-fs.appendFileSync(serviceFile, "	}\n");
-fs.appendFileSync(serviceFile, "    public static void reportFalsePositive(" + objectName + " n) {\n");
-fs.appendFileSync(serviceFile, "        String postData = 'user=bruce' + SHARED_PARAMS + '&data='+n." + fieldForEncryption + ";\n");
-fs.appendFileSync(serviceFile, "        String url = serviceHost + '/false_positive/';\n");
-fs.appendFileSync(serviceFile, "        callService(url, postData);\n");
-fs.appendFileSync(serviceFile, "    }\n\n");
+    fs.appendFileSync(serviceFile, "    public static String decrypt(String user, String encryptedData) {\n");
+    fs.appendFileSync(serviceFile, "        /* TODO: Need to sanitize for HTML encoding */\n");
+    fs.appendFileSync(serviceFile, "        String postData = 'user=' + user + SHARED_PARAMS + '&data='+encryptedData;\n");
+    fs.appendFileSync(serviceFile, "        String url = serviceHost + '/detokenize/';\n");
+    fs.appendFileSync(serviceFile, "        Map<String, Object> results = callService(url, postData);\n");
+    fs.appendFileSync(serviceFile, "        Map<String, Object> response =(Map<String, Object>) results.get('response');\n");
+    fs.appendFileSync(serviceFile, "        String status = (String)response.get('status');\n");
+    fs.appendFileSync(serviceFile, "        if( status == 'authorized') {\n");
+    fs.appendFileSync(serviceFile, "        	String decryptedData = (String)response.get('data');   \n");
+    fs.appendFileSync(serviceFile, "	        return decryptedData;\n");
+    fs.appendFileSync(serviceFile, "        } else {\n");
+    fs.appendFileSync(serviceFile, "            return 'Not authorized for decryption of this sensitive data.';\n");
+    fs.appendFileSync(serviceFile, "        }\n");
+    fs.appendFileSync(serviceFile, "	}\n");
+    fs.appendFileSync(serviceFile, "    public static void reportFalsePositive(" + objectName + " n) {\n");
+    fs.appendFileSync(serviceFile, "        String postData = 'user=bruce' + SHARED_PARAMS + '&data='+n." + fieldForEncryption + ";\n");
+    fs.appendFileSync(serviceFile, "        String url = serviceHost + '/false_positive/';\n");
+    fs.appendFileSync(serviceFile, "        callService(url, postData);\n");
+    fs.appendFileSync(serviceFile, "    }\n\n");
 
-fs.appendFileSync(serviceFile, "    public static void reportFalseNegative(" + objectName + " n) {\n");
-fs.appendFileSync(serviceFile, "        String postData = 'user=bruce' + SHARED_PARAMS\n");
-fs.appendFileSync(serviceFile, "            + '&data_type=Note'\n");
-fs.appendFileSync(serviceFile, "           + '&data_id=' + n.Id\n");
-fs.appendFileSync(serviceFile, "            + '&data=' + n." + fieldForEncryption + ";\n");
-fs.appendFileSync(serviceFile, "        String url = serviceHost + '/false_negative/';\n");
-fs.appendFileSync(serviceFile, "        callService(url, postData);\n");
-fs.appendFileSync(serviceFile, "    }\n\n");
+    fs.appendFileSync(serviceFile, "    public static void reportFalseNegative(" + objectName + " n) {\n");
+    fs.appendFileSync(serviceFile, "        String postData = 'user=bruce' + SHARED_PARAMS\n");
+    fs.appendFileSync(serviceFile, "            + '&data_type=Note'\n");
+    fs.appendFileSync(serviceFile, "           + '&data_id=' + n.Id\n");
+    fs.appendFileSync(serviceFile, "            + '&data=' + n." + fieldForEncryption + ";\n");
+    fs.appendFileSync(serviceFile, "        String url = serviceHost + '/false_negative/';\n");
+    fs.appendFileSync(serviceFile, "        callService(url, postData);\n");
+    fs.appendFileSync(serviceFile, "    }\n\n");
 
-fs.appendFileSync(serviceFile, "    public static void WrongPermission(String id,String reason) \n");
-fs.appendFileSync(serviceFile, "    {\n");
-fs.appendFileSync(serviceFile, "        " + objectName + " n = [SELECT " + fieldsString + " from " + objectName + " WHERE Id = :id LIMIT 1];\n");
-fs.appendFileSync(serviceFile, "        String postData = 'user=bruce' + SHARED_PARAMS + '&data=' + n." + fieldForEncryption + "+'&reason='+reason;\n");
-fs.appendFileSync(serviceFile, "        String url = serviceHost + '/wrong_permission/';\n");
-fs.appendFileSync(serviceFile, "        callService(url, postData);  \n");
-fs.appendFileSync(serviceFile, "    }\n\n");
+    fs.appendFileSync(serviceFile, "    public static void WrongPermission(String id,String reason) \n");
+    fs.appendFileSync(serviceFile, "    {\n");
+    fs.appendFileSync(serviceFile, "        " + objectName + " n = [SELECT " + fieldsString + " from " + objectName + " WHERE Id = :id LIMIT 1];\n");
+    fs.appendFileSync(serviceFile, "        String postData = 'user=bruce' + SHARED_PARAMS + '&data=' + n." + fieldForEncryption + "+'&reason='+reason;\n");
+    fs.appendFileSync(serviceFile, "        String url = serviceHost + '/wrong_permission/';\n");
+    fs.appendFileSync(serviceFile, "        callService(url, postData);  \n");
+    fs.appendFileSync(serviceFile, "    }\n\n");
 
-fs.appendFileSync(serviceFile, "	private static Map<String, Object> callService(String url, String postData) {\n");
-fs.appendFileSync(serviceFile, "        system.debug(postData);\n");
-fs.appendFileSync(serviceFile, "        system.debug(url);\n");
-fs.appendFileSync(serviceFile, "        HttpRequest req = new HttpRequest();\n");
-fs.appendFileSync(serviceFile, "        req = new HttpRequest();\n");
-fs.appendFileSync(serviceFile, "        req.setEndpoint(url);\n");
-fs.appendFileSync(serviceFile, "        req.setMethod('POST');\n");
-fs.appendFileSync(serviceFile, "        req.setBody(postData);\n");
-fs.appendFileSync(serviceFile, "        req.setTimeout(10000);\n");
-fs.appendFileSync(serviceFile, "        Http http = new Http();\n");
-fs.appendFileSync(serviceFile, "        HttpResponse res = http.send(req);\n");
-fs.appendFileSync(serviceFile, "        system.debug('response'+res);\n");
-fs.appendFileSync(serviceFile, "        Map<String, Object> results = null;\n");
-fs.appendFileSync(serviceFile, "        if (res.getStatusCode() == 200) {\n");
-fs.appendFileSync(serviceFile, "            // Deserialize the JSON string into collections of primitive data types.\n");
-fs.appendFileSync(serviceFile, "            results = (Map<String, Object>) JSON.deserializeUntyped(res.getBody());\n");
-fs.appendFileSync(serviceFile, "            return results;\n");
-fs.appendFileSync(serviceFile, "        }\n");
-fs.appendFileSync(serviceFile, "        else\n");
-fs.appendFileSync(serviceFile, "        {\n");
-fs.appendFileSync(serviceFile, "          	return callService(url,postData);      \n");
-fs.appendFileSync(serviceFile, "        }\n");
-fs.appendFileSync(serviceFile, "    }    \n");
-fs.appendFileSync(serviceFile, "}\n");
+    fs.appendFileSync(serviceFile, "	private static Map<String, Object> callService(String url, String postData) {\n");
+    fs.appendFileSync(serviceFile, "        system.debug(postData);\n");
+    fs.appendFileSync(serviceFile, "        system.debug(url);\n");
+    fs.appendFileSync(serviceFile, "        HttpRequest req = new HttpRequest();\n");
+    fs.appendFileSync(serviceFile, "        req = new HttpRequest();\n");
+    fs.appendFileSync(serviceFile, "        req.setEndpoint(url);\n");
+    fs.appendFileSync(serviceFile, "        req.setMethod('POST');\n");
+    fs.appendFileSync(serviceFile, "        req.setBody(postData);\n");
+    fs.appendFileSync(serviceFile, "        req.setTimeout(10000);\n");
+    fs.appendFileSync(serviceFile, "        Http http = new Http();\n");
+    fs.appendFileSync(serviceFile, "        HttpResponse res = http.send(req);\n");
+    fs.appendFileSync(serviceFile, "        system.debug('response'+res);\n");
+    fs.appendFileSync(serviceFile, "        Map<String, Object> results = null;\n");
+    fs.appendFileSync(serviceFile, "        if (res.getStatusCode() == 200) {\n");
+    fs.appendFileSync(serviceFile, "            // Deserialize the JSON string into collections of primitive data types.\n");
+    fs.appendFileSync(serviceFile, "            results = (Map<String, Object>) JSON.deserializeUntyped(res.getBody());\n");
+    fs.appendFileSync(serviceFile, "            return results;\n");
+    fs.appendFileSync(serviceFile, "        }\n");
+    fs.appendFileSync(serviceFile, "        else\n");
+    fs.appendFileSync(serviceFile, "        {\n");
+    fs.appendFileSync(serviceFile, "          	return callService(url,postData);      \n");
+    fs.appendFileSync(serviceFile, "        }\n");
+    fs.appendFileSync(serviceFile, "    }    \n");
+    fs.appendFileSync(serviceFile, "}\n");
 }
 
 function GenererateEditPage(fieldDetail, GlobalfileName, EditControllerClassName, EditPageName,fieldForEncryption,ListViewPageName,isOtherEnvironment,version) {
@@ -832,7 +832,7 @@ function cleanDump(directory = "dump") {
         if (err) throw err;
       
         for (const file of files) {
-          fs.unlink(path.join(directory, file), err => {
+          fs.unlinkSync(path.join(directory, file), err => {
             if (err) throw err;
           });
         }

@@ -5,7 +5,7 @@ const file_system = require('fs');
 const archiver = require('archiver');
 const jsforce = require('jsforce');
 const path = require('path');
-const { notEqual } = require('assert');
+const shell = require('shelljs');
 const {
     GenerateController,
     GenerateTrigger,
@@ -48,7 +48,7 @@ app.post('/api/customObj', (req, res) => {
       if (err) { console.error(err); }
       
       //clear the folder for new files
-      cleanDump();
+    //   cleanDump();
         
       var _temp = _response;
       conn.sobject(objectName).describe(function (err, meta) {
@@ -81,8 +81,9 @@ app.post('/api/customObj', (req, res) => {
         GenererateEditPage(fieldDetail, GlobalfileName, EditControllerClassName, EditPageName,fieldForEncryption,ListViewPageName,isOtherEnvironment,version); 
 
         const zipName = makeid(25);
+        const output = shell.exec(`zip -r ./public/zip/${zipName}.zip dump `);
+        console.log(output.stdout);
         setTimeout(() => {
-            compressZip(zipName);
             _temp.send({status: zipName});
         }, 1000);
       });
